@@ -6,9 +6,9 @@ def takeInput():
     number_of_resources = int(input("enter number of resources: "))
     
     
-    allocation = []
-    maxx = []
-    available = []
+    allocation = []   #
+    maxx =  []      # 
+    available = []  #
     
     print("please enter the allocation matrix row by row")
     
@@ -23,7 +23,11 @@ def takeInput():
             row.append(int(integer))
     
         
-    
+        if len(row) != number_of_resources:
+            print("invalid allocation matrix")
+            print(' ')
+            return -1
+            
         allocation.append(row)
     
     
@@ -38,15 +42,23 @@ def takeInput():
         for integer in s:
             row.append(int(integer))
     
-        
+        if len(row) != number_of_resources:
+            print("invalid Max matrix")
+            print(' ')
+            return -1
     
         maxx.append(row)
     
-    
+    print(' ')
     s = input('enter available vector separated by spaces: ').split()
            
     for integer in s:
         available.append(int(integer))
+
+    if len(available) != number_of_resources:
+            print("invalid avaliable vector")
+            print(' ')
+            return -1
 
     return allocation,maxx,available,number_of_processes,number_of_resources
 ############################################################################################################################################################
@@ -57,7 +69,7 @@ def getNeed(allocation,maxx,avaliable):
     Max = np.array(maxx)
     Avaliable = np.array(avaliable)
     Need = Max - Allocation
-    return Allocation,Max,Avaliable,Need
+    return Allocation,Avaliable,Need
 ############################################################################################################################################################
 
 def arrayLessThanOrEqual(arr1,arr2,size):
@@ -109,7 +121,7 @@ def safety(Allocation,Avaliable,Need,number_of_processes,number_of_resources):
 
 ##############################################################resource_request##############################################################################
 def resource_request(Allocation,Avaliable,Need,number_of_processes,number_of_resources):
-    process = int(input("enter the process number"))
+    process = int(input("enter the process number: "))
     request = []
     s = input('enter request vector separated by spaces: ').split()
            
@@ -141,8 +153,6 @@ def resource_request(Allocation,Avaliable,Need,number_of_processes,number_of_res
 
     Allocation[process,:] = Allocation[process,:] + Request
 
-    print(Allocation)
-
     Need[process,:] = Need[process,:] - Request
 
     safe,sequence = safety(Allocation,Avaliable,Need,number_of_processes,number_of_resources)
@@ -152,10 +162,17 @@ def resource_request(Allocation,Avaliable,Need,number_of_processes,number_of_res
 
 
 while True:
+    
+    try:
+        allocation,maxx,available,number_of_processes,number_of_resources = takeInput()
+    except TypeError:
+        continue
 
-    allocation,maxx,available,number_of_processes,number_of_resources = takeInput()
 
-    Allocation,Max,Avaliable,Need = getNeed(allocation,maxx,available)
+    
+
+    Allocation,Avaliable,Need = getNeed(allocation,maxx,available)
+
     
     
     print("Need matrix :")
@@ -166,8 +183,14 @@ while True:
 
         if choose == 'S':
             safe,sequence = safety(np.copy(Allocation),np.copy(Avaliable),np.copy(Need),number_of_processes,number_of_resources)
+
+            p_sequence= []
+
+            for num in sequence:
+                p_sequence.append("p"+str(num))
+
             if safe:
-                print("Yes , Safe state <",sequence,">")
+                print("Yes , Safe state <",p_sequence,">")
             else:
                 print('Not safe')
 
@@ -175,8 +198,15 @@ while True:
     
         elif choose == 'R':
             safe,sequence,process = resource_request(np.copy(Allocation),np.copy(Avaliable),np.copy(Need),number_of_processes,number_of_resources)
+            
+            p_sequence= []
+
+            for num in sequence:
+                p_sequence.append("p"+str(num))
+
+
             if safe:
-                print("Yes request can be granted with safe state , Safe state <P"+str(process)+"req",sequence,">")
+                print("Yes request can be granted with safe state , Safe state <P"+str(process)+"req",p_sequence,">")
             else:
                 print('Not safe')
     
