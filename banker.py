@@ -2,8 +2,13 @@ import numpy as np
 
 ###############################taking input##################################################################################################################
 def takeInput():
-    number_of_processes = int(input("enter number of processes: "))
-    number_of_resources = int(input("enter number of resources: "))
+    try:
+        number_of_processes = int(input("enter number of processes: "))
+        number_of_resources = int(input("enter number of resources: "))
+    except ValueError:
+        print('invalid input')
+        return -1
+    
     
     
     allocation = []   #
@@ -121,15 +126,19 @@ def safety(Allocation,Avaliable,Need,number_of_processes,number_of_resources):
 
 ##############################################################resource_request##############################################################################
 def resource_request(Allocation,Avaliable,Need,number_of_processes,number_of_resources):
-    process = int(input("enter the process number: "))
-    request = []
-    s = input('enter request vector separated by spaces: ').split()
+    try:
+        process = int(input("enter the process number: "))
+        request = []
+        s = input('enter request vector separated by spaces: ').split()
+    except ValueError:
+        return 404
+    
            
     for integer in s:
         request.append(int(integer))
 
 
-    #print(request,Need[process,:])
+    
 
     condition1 = arrayLessThanOrEqual(request,Need[process,:],number_of_resources)
     condition2 = arrayLessThanOrEqual(request,Avaliable,number_of_resources)
@@ -197,7 +206,13 @@ while True:
     
     
         elif choose == 'R':
-            safe,sequence,process = resource_request(np.copy(Allocation),np.copy(Avaliable),np.copy(Need),number_of_processes,number_of_resources)
+            try:
+                safe,sequence,process = resource_request(np.copy(Allocation),np.copy(Avaliable),np.copy(Need),number_of_processes,number_of_resources)
+            except TypeError:
+                print("Not safe")
+                print(' ')
+                continue
+            
             
             p_sequence= []
 
@@ -207,8 +222,10 @@ while True:
 
             if safe:
                 print("Yes request can be granted with safe state , Safe state <P"+str(process)+"req",p_sequence,">")
+                print(' ')
             else:
                 print('Not safe')
+                print(' ')
     
         else:
             break
